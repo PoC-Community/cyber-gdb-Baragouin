@@ -1,7 +1,76 @@
 #include <stdio.h>
 #include <string.h>
 
-void step2(void);
+void step3(const char *s);
+
+void step2(void) {
+    // mov    DWORD PTR [ebp-0x1b],0x724e217d
+    // mov    DWORD PTR [ebp-0x17],0x225c3a5f
+    // mov    WORD PTR [ebp-0x13],0x274e
+    // mov    BYTE PTR [ebp-0x11],0x0
+    char secret[11] = "}!Nr_:\\\"N'";
+
+    char input[10];
+    char result[11];
+
+    // push   0x804a094
+    // call   0x8049080 <puts@plt>
+    puts("============ CHAMP2 ============");
+
+    // push   0x804a0cf
+    // call   0x8049080 <puts@plt>
+    puts("\nWhat is the flag ?");
+
+    // sub    esp,0x4
+    // push   0xa       ; 10 bytes
+    // lea    eax,[ebp-0x26]
+    // push   eax       ; buffer
+    // push   0x0       ; fd = 0 (stdin)
+    // call   0x8049050 <read@plt>
+    ssize_t n = read(0, input, 10);
+
+    // mov    DWORD PTR [ebp-0x10],eax
+    // cmp    DWORD PTR [ebp-0x10],0xa
+    // jne    0x8049407 <step2+194>
+    if (n != 10) return;
+
+    // lea    edx,[ebp-0x1b]
+    // mov    eax,DWORD PTR [ebp-0xc]
+    // add    eax,edx
+    // movzx  ecx,BYTE PTR [eax]
+    // lea    edx,[ebp-0x26]
+    // mov    eax,DWORD PTR [ebp-0xc]
+    // add    eax,edx
+    // movzx  eax,BYTE PTR [eax]
+    // xor    ecx,eax
+    // lea    edx,[ebp-0x31]
+    // mov    eax,DWORD PTR [ebp-0xc]
+    // add    eax,edx
+    // mov    BYTE PTR [eax],cl
+    // add    DWORD PTR [ebp-0xc],0x1
+    // cmp    DWORD PTR [ebp-0xc],0xa
+    // jle    0x80493a8 <step2+99>
+    for (int i = 0; i < 10; ++i) {
+        result[i] = secret[i] ^ input[i];
+    }
+    result[10] = '\0';
+
+    // push   0x804a0e3
+    // lea    eax,[ebp-0x31]
+    // push   eax
+    // call   0x8049040 <strcmp@plt>
+    // test   eax,eax
+    // jne    0x804940a <step2+197>
+    if (strcmp(result, "4e!!oWor!d") == 0) {
+        // push   eax
+	// push   0x804a0f0
+	// call   0x8049060 <printf@plt>
+        printf("\nYou're the first one to defeat me :(. You won't make it against the final boss though ! \"%s\"\n", result);
+
+	//call   0x8049265 <step3>
+        step3(result);
+    }
+}
 
 void step1(char *userInput) {
     // push   0x804a150
